@@ -50,8 +50,8 @@ var port = process.env.PORT || config.get('service.port');
 
 
 server.listen(port, function () {    
-    const microserviceClient = require('vizz.microservice-client');
-    
+    //const microserviceClient = require('vizz.microservice-client');
+    const microserviceClient = require('ct-register-microservice-node');    
     microserviceClient.register({
         id: config.get('service.id'),
         name: config.get('service.name'),
@@ -60,12 +60,12 @@ server.listen(port, function () {
         logger: logger,
         app: app
     });
-    if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
-        microserviceClient.autoDiscovery(config.get('service.name')).then(() => {}, (err) => {
-            logger.error('Error registering');
-            process.exit(1);
-        });
-    }
+    // if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
+    //     microserviceClient.autoDiscovery(config.get('service.name')).then(() => {}, (err) => {
+    //         logger.error('Error registering');
+    //         process.exit(1);
+    //     });
+    // }
 });
 
 logger.info('Server started in port:' + port);
