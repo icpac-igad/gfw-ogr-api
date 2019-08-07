@@ -1,7 +1,7 @@
 'use strict';
 //load modules
 
-require('newrelic');
+//require('newrelic');
 var config = require('config');
 var logger = require('logger');
 var path = require('path');
@@ -10,6 +10,7 @@ var koaLogger = require('koa-logger');
 var loader = require('loader');
 var validate = require('koa-validate');
 var ErrorSerializer = require('serializers/errorSerializer');
+const ctRegisterMicroservice = require('ct-register-microservice-node');
 
 
 // instance of koa
@@ -50,15 +51,25 @@ var port = process.env.PORT || config.get('service.port');
 
 
 server.listen(port, function () {    
-    //const microserviceClient = require('vizz.microservice-client');
-    const microserviceClient = require('ct-register-microservice-node');    
-    microserviceClient.register({
+    //const microserviceClient = require('vizz.microservice-client');   
+    ctRegisterMicroservice.register({
+        info: require('../microservice/register.json'),
+        swagger: require('../microservice/public-swagger.json'),
         id: config.get('service.id'),
         name: config.get('service.name'),
         dirConfig: path.join(__dirname, '../microservice'),
         dirPackage: path.join(__dirname, '../../'),
+        mode: (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') ? ctRegisterMicroservice.MODE_AUTOREGISTER : ctRegisterMicroservice.MODE_NORMAL,
+        framework: ctRegisterMicroservice.KOA1,
         logger: logger,
-        app: app
+        app: app,
+        ctUrl: process.env.CT_URL,
+        url: process.env.LOCAL_URL,
+        token: process.env.CT_TOKEN,
+        active: true
+    }).then(() => {}, (error) => {
+        logger.error(error);
+        process.exit(1);
     });
     // if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
     //     microserviceClient.autoDiscovery(config.get('service.name')).then(() => {}, (err) => {
