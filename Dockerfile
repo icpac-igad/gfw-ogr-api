@@ -1,5 +1,5 @@
-FROM vizzuality/gdal
-MAINTAINER raul.requero@vizzuality.com
+FROM geodata/gdal
+MAINTAINER hello@vizzuality.com
 
 # Install node
 RUN apt-get update && apt-get -y install curl git

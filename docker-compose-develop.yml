@@ -15,3 +15,5 @@ develop:
   command: develop
   volumes:
     - ./app:/opt/gfw-ogr-api/app
+  extra_hosts:
+    - "mymachine:$MYMACHINE"
