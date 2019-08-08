@@ -71,12 +71,6 @@ server.listen(port, function () {
         logger.error(error);
         process.exit(1);
     });
-    // if (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') {
-    //     microserviceClient.autoDiscovery(config.get('service.name')).then(() => {}, (err) => {
-    //         logger.error('Error registering');
-    //         process.exit(1);
-    //     });
-    // }
 });
 
 logger.info('Server started in port:' + port);
