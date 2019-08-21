@@ -1,4 +1,4 @@
-FROM geodata/gdal:latest
+FROM geodata/gdal:2.1.3
 MAINTAINER hello@vizzuality.com
 
 # Install node
