@@ -25,7 +25,6 @@ var router = new Router({
     prefix: '/ogr'
 });
 
-
 var ogrExec = function(ogr) {
     return function(callback) {
         ogr.exec(callback);
@@ -41,15 +40,20 @@ var unlink = function(file) {
 
 class OGRRouterV2 {
     static * convertV2() {
-        //logger.debug('Converting file...', this.request.body);
+        // logger.info('Converting file...', this.request.body);
 
         this.assert(this.request.body && this.request.body.files && this.request.body.files.file, 400, 'File required');
+        var simplify = this.query.simplify || null;
+        var clean = this.query.clean || false;
+
+        var simplify_cmd = simplify ? `-simplify dp ${simplify}% ` : '';
+        var clean_cmd = clean && Boolean(clean) ? '-clean ' : '';
 
         try {
             var ogr;
 
             if (this.request.body.files.file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'){
-                logger.debug('IT IS A excel');
+                logger.debug('It is an excel file');
                 var xslxFile = XLSX.readFile(this.request.body.files.file.path);
                 var csvPAth = path.parse(this.request.body.files.file.path);
                 csvPAth.ext = '.csv';
@@ -78,20 +82,23 @@ class OGRRouterV2 {
 
             }
             var result = yield ogrExec(ogr);
-            logger.debug(result);
 
-            // mapshaper here
-            var input_index = 'input.geojson';
-            var input_obj = {};
-            input_obj[input_index] = result;
+            var input_obj = {
+                'input.geojson': result
+            };
 
-            var command_string = `-i ${input_index} -simplify dp 20% -clean -o geojson/ format=geojson`;
-            var result_post_mapshaper = mapshaper.runCommands(command_string, input_obj);
-            console.debug('POST MAPSHAPER CMD', result_post_mapshaper)
+            var command_string = `-i input.geojson ${simplify_cmd}${clean_cmd}-o format=geojson`;
+            var result_post_mapshaper = mapshaper.applyCommands(command_string, input_obj, function(Error, data) {
+                if (Error) {
+                    logger.error(Error);
+                }
+                return JSON.stringify(data);
+            });
 
-            this.body = GeoJSONSerializer.serialize(result);
+            console.log('RETURNED DATA', result_post_mapshaper);
+            this.body = GeoJSONSerializer.serialize(result_post_mapshaper);
         } catch (e) {
-            logger.error('Error convert file', e);
+            logger.error('Error convertV2 file', e);
             this.throw(400, e.message.split('\n')[0]);
         } finally {
             logger.debug('Removing file');

@@ -64,12 +64,12 @@ class OGRRouter {
                 ogr = ogr2ogr(this.request.body.files.file.path);
                 ogr.project('EPSG:4326')
                 .timeout(60000); // increase default ogr timeout of 15 seconds to match control-tower
-                
+
                 if (this.request.body.files.file.type === 'text/csv' || this.request.body.files.file.type ==='application/vnd.ms-excel') {
                 logger.debug('csv transforming ...');
                 // @TODO
                 ogr.options(['-oo','GEOM_POSSIBLE_NAMES=*geom*','-oo','HEADERS=AUTO','-oo','X_POSSIBLE_NAMES=Lon*','-oo','Y_POSSIBLE_NAMES=Lat*','-oo','KEEP_GEOM_COLUMNS=NO']);
-                }  
+                }
                 else {
                     ogr.options(['-dim', '2']);
                 }
