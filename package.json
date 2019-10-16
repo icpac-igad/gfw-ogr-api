@@ -26,6 +26,7 @@
     "bunyan": "1.7.1",
     "co-request": "1.0.0",
     "config": "1.19.0",
+    "ct-register-microservice-node": "^2.1.7",
     "jsonapi-serializer": "2.1.1",
     "koa": "1.2.0",
     "koa-basic-auth": "1.1.2",
@@ -34,12 +35,12 @@
     "koa-mount": "1.3.0",
     "koa-router": "5.4.0",
     "koa-validate": "0.2.11",
+    "mapshaper": "^0.4.137",
     "newrelic": "1.27.1",
     "ogr2ogr": "git+http://github.com/gfw-api/ogr2ogr.git#master",
     "thunks": "4.1.3",
-    "xlsx":"0.15.1",
     "url": "0.11.0",
-    "ct-register-microservice-node": "^2.1.7"
+    "xlsx": "0.15.1"
   },
   "devDependencies": {
     "co-mocha": "1.1.2",
