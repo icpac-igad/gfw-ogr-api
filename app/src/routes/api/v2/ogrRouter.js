@@ -40,7 +40,7 @@ var unlink = function(file) {
 
 class OGRRouterV2 {
     static * convertV2() {
-        // logger.info('Converting file...', this.request.body);
+        logger.info('Converting file...', this.request.body);
 
         this.assert(this.request.body && this.request.body.files && this.request.body.files.file, 400, 'File required');
         var simplify = this.query.simplify || null;
@@ -81,22 +81,17 @@ class OGRRouterV2 {
                 }
 
             }
+            //ogr output
             var result = yield ogrExec(ogr);
 
-            var input_obj = {
-                'input.geojson': result
-            };
+            //Mapshaper input strean from file
+            const input = {'input.json': result};
+            var cmd = `-i input.json ${simplify_cmd}${clean_cmd} -o`;
 
-            var command_string = `-i input.geojson ${simplify_cmd}${clean_cmd}-o format=geojson`;
-            var result_post_mapshaper = mapshaper.applyCommands(command_string, input_obj, function(Error, data) {
-                if (Error) {
-                    logger.error(Error);
-                }
-                return JSON.stringify(data);
-            });
+            var result_post_mapshaper = yield mapshaper.applyCommands(cmd, input);
 
-            console.log('RETURNED DATA', result_post_mapshaper);
-            this.body = GeoJSONSerializer.serialize(result_post_mapshaper);
+            this.body = GeoJSONSerializer.serialize(JSON.parse(result_post_mapshaper['input.json']));
+            
         } catch (e) {
             logger.error('Error convertV2 file', e);
             this.throw(400, e.message.split('\n')[0]);
