@@ -46,7 +46,7 @@ class OGRRouterV2 {
         var simplify = this.query.simplify || null;
         var clean = this.query.clean || false;
 
-        var simplify_cmd = simplify ? `-simplify dp ${simplify}% ` : '';
+        var simplify_cmd = simplify ? `-simplify visvalingam percentage=${simplify}% keep-shapes ` : '';
         var clean_cmd = clean && Boolean(clean) ? '-clean ' : '';
 
         try {
@@ -86,11 +86,10 @@ class OGRRouterV2 {
 
             //Mapshaper input strean from file
             const input = {'input.json': result};
-            var cmd = `-i input.json ${simplify_cmd}${clean_cmd} -o`;
-
+            var cmd = `-i input.json ${simplify_cmd}${clean_cmd} -o output.json`;
+            logger.info(cmd);
             var result_post_mapshaper = yield mapshaper.applyCommands(cmd, input);
-
-            this.body = GeoJSONSerializer.serialize(JSON.parse(result_post_mapshaper['input.json']));
+            this.body = GeoJSONSerializer.serialize(JSON.parse(result_post_mapshaper['output.json']));
             
         } catch (e) {
             logger.error('Error convertV2 file', e);
