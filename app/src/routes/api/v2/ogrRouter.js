@@ -84,9 +84,10 @@ class OGRRouterV2 {
             //ogr output
             var result = yield ogrExec(ogr);
 
+
             //Mapshaper input strean from file
             const input = {'input.json': result};
-            var cmd = `-i input.json ${simplify_cmd}${clean_cmd} -o output.json`;
+            var cmd = `-i no-topology input.json ${simplify_cmd}${clean_cmd} -each '__id=$.id' -o output.json`;
             logger.info(cmd);
             var result_post_mapshaper = yield mapshaper.applyCommands(cmd, input);
             this.body = GeoJSONSerializer.serialize(JSON.parse(result_post_mapshaper['output.json']));
