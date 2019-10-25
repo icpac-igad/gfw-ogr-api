@@ -7,7 +7,8 @@
     "test-e2e": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js e2eTest",
     "test-unit": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js unitTest",
     "start": "NODE_PATH=app/src node app/pm2.js",
-    "test": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js test"
+    "test": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js test",
+    "coverage": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js nyc"
   },
   "repository": {
     "type": "git",
@@ -64,13 +65,15 @@
     "grunt-express-server": "0.5.1",
     "grunt-mocha-test": "0.12.7",
     "grunt-notify": "0.4.3",
+    "grunt-simple-nyc": "^3.0.0",
     "load-grunt-tasks": "3.4.0",
     "mocha": "2.4.5",
     "mockery": "1.4.1",
     "should": "8.2.2",
     "should-http": "0.0.4",
     "sinon": "1.17.3",
-    "supertest": "1.2.0"
+    "supertest": "1.2.0",
+    "nyc": "^14.1.1"
   },
   "engines": {
     "node": ">=8 <9"

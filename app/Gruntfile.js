@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = function (grunt) {
 
     grunt.file.setBase('..');
@@ -72,6 +70,20 @@ module.exports = function (grunt) {
                 }
             },
 
+        },
+
+        nyc: {
+            cover: {
+                options: {
+                    include: ['app/src/**'],
+                    exclude: '*.test.*',
+                    reporter: ['lcov', 'text-summary'],
+                    reportDir: 'coverage',
+                    all: true
+                },
+                cmd: false,
+                args: ['grunt', '--gruntfile', 'app/Gruntfile.js', 'test']
+            }
         }
     });
 
@@ -85,5 +97,7 @@ module.exports = function (grunt) {
     grunt.registerTask('serve', ['express:dev', 'watch']);
 
     grunt.registerTask('default', 'serve');
+
+    grunt.loadNpmTasks('grunt-simple-nyc');
 
 };
