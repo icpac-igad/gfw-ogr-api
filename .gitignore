@@ -3,4 +3,5 @@
 npm-debug.log
 prod.env
 *.env
-package-lock.json
+coverage
+.nyc_output

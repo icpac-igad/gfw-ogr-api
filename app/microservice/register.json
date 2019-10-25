@@ -8,6 +8,14 @@
         "endpoints": [{
             "method": "POST",
             "path": "/api/v1/ogr/convert"
+            }]
+        },
+        {
+        "url": "/v2/ogr/convert",
+        "method": "POST",
+        "endpoints": [{
+            "method": "POST",
+            "path": "/api/v2/ogr/convert"
+            }]
         }]
-    }]
 }

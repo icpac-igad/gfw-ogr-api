@@ -1,9 +1,10 @@
 # Global Forest Watch OGR API
 
-Master: [![Build Status](https://travis-ci.org/gfw-api/gfw-ogr-api.svg?branch=master)](https://travis-ci.org/gfw-api/gfw-ogr-api) Develop: [![Build Status](https://travis-ci.org/gfw-api/gfw-ogr-api.svg?branch=develop)](https://travis-ci.org/gfw-api/gfw-ogr-api)
+[![Build Status](https://travis-ci.org/gfw-api/gfw-ogr-api.svg?branch=develop)](https://travis-ci.org/gfw-api/gfw-ogr-api)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a818cbdf6e1cb49d6256/test_coverage)](https://codeclimate.com/github/gfw-api/gfw-ogr-api/test_coverage)
 
 This repository is the microservice that implements the OGR
-funcionality, which is exposed on the /convert endpoint.
+functionality, which is exposed on the /convert endpoint.
 
 The OGR service is used to convert various geo formats in to GeoJSON (in
 a web mercator projection), mainly to be used on the GFW map. For

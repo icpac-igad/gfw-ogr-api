@@ -1,45 +1,45 @@
-'use strict';
-var logger = require('logger');
-var should = require('should');
-var assert = require('assert');
-var errorSerializer = require('serializers/errorSerializer');
 
-describe('Error serializer test', function() {
-    var data = [
+const logger = require('logger');
+const should = require('should');
+const assert = require('assert');
+const errorSerializer = require('serializers/errorSerializer');
+
+describe('Error serializer test', () => {
+    const data = [
         {
-          name: 'Name not valid'
+            name: 'Name not valid'
         },
         {
-          surname: 'Surname not valid'
+            surname: 'Surname not valid'
         }
     ];
 
-    before(function*() {
+    before(function* () {
 
     });
 
-    it('Generate correct jsonapi response', function() {
-      let response = errorSerializer.serializeValidationBodyErrors(data);
-      
-      response.should.not.be.a.Array();
-      response.should.have.property('errors');
-      response.errors.should.have.length(2);
+    it('Generate correct jsonapi response', () => {
+        const response = errorSerializer.serializeValidationBodyErrors(data);
 
-      let error = response.errors[0];
+        response.should.not.be.a.Array();
+        response.should.have.property('errors');
+        response.errors.should.have.length(2);
 
-      error.should.have.property('source');
-      error.should.have.property('title');
-      error.should.have.property('detail');
-      error.should.have.property('code');
-      error.detail.should.be.a.String();
-      error.title.should.be.a.String();
-      error.code.should.be.a.String();
-      error.source.should.be.a.Object();
-      error.source.should.have.property('parameter');
-      error.source.parameter.should.be.a.String();
+        const error = response.errors[0];
+
+        error.should.have.property('source');
+        error.should.have.property('title');
+        error.should.have.property('detail');
+        error.should.have.property('code');
+        error.detail.should.be.a.String();
+        error.title.should.be.a.String();
+        error.code.should.be.a.String();
+        error.source.should.be.a.Object();
+        error.source.should.have.property('parameter');
+        error.source.parameter.should.be.a.String();
     });
 
-    after(function*() {
+    after(function* () {
 
     });
 });
