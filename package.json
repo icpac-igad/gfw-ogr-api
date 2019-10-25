@@ -13,7 +13,11 @@
     "type": "git",
     "url": "git+https://github.com/Vizzuality/gfw-ogr-api.git"
   },
-  "author": "raul.requero@vizzuality.com",
+  "author": {
+    "name": "Vizzuality",
+    "email": "hello@vizzuality.com",
+    "url": "http://vizzuality.com/"
+  },
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Vizzuality/gfw-ogr-api/issues"
