@@ -7,7 +7,7 @@
     "test-e2e": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js e2eTest",
     "test-unit": "NODE_PATH=app/src grunt --gruntfile app/Gruntfile.js unitTest",
     "start": "NODE_PATH=app/src node app/pm2.js",
-    "test": "docker-compose -f docker-compose-test.yml run test"
+    "test": "NODE_PATH=app/src node $NODE_DEBUG_OPTION ./node_modules/.bin/grunt --gruntfile app/Gruntfile.js test"
   },
   "repository": {
     "type": "git",
@@ -61,5 +61,8 @@
     "should-http": "0.0.4",
     "sinon": "1.17.3",
     "supertest": "1.2.0"
+  },
+  "engines": {
+    "node": ">=7 <8"
   }
 }
