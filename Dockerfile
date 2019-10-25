@@ -3,7 +3,7 @@ MAINTAINER hello@vizzuality.com
 
 # Install node
 RUN apt-get update && apt-get -y install curl git
-RUN curl -sL https://deb.nodesource.com/setup_7.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install -y nodejs
 
 # end install node
