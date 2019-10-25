@@ -19,9 +19,6 @@
     "url": "https://github.com/Vizzuality/gfw-ogr-api/issues"
   },
   "homepage": "https://github.com/Vizzuality/gfw-ogr-api#readme",
-  "engines": {
-    "node": ">5.7.0"
-  },
   "dependencies": {
     "bunyan": "1.7.1",
     "co-request": "1.0.0",
