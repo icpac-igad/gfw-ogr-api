@@ -67,3 +67,20 @@ It is necessary to define these environment variables:
 
 * API_GATEWAY_URI => Gateway Serice API URL
 * NODE_ENV => Environment (prod, staging, dev)
+
+
+## Using /convert endpoint with CSV or WKT
+
+Send a query to a local or deployed instance of the microservice, e.g. `localhost:9000/v2/ogr/convert?simplify=20&clean=true`
+with `file: <input_file>` input, and `Accept: application/json, text/plain, */*`. Passing a text file requires some headers and
+column structure around the WKT output, e.g.:
+
+`input_file.csv`
+```
+col,geom
+1,"POLYGON ((10.8984375 25.48295117535531, 5.625 17.308687886770034, 20.0390625 16.29905101458183, 18.28125 23.885837699862005, 10.8984375 25.48295117535531))"
+```
+
+## Converting to WKB
+
+Setting a param `wkb: true` the output should return in WKB format.

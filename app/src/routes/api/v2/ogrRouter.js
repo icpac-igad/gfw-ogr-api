@@ -44,6 +44,7 @@ class OGRRouterV2 {
         this.assert(this.request.body && this.request.body.files && this.request.body.files.file, 400, 'File required');
         const simplify = this.query.simplify || null;
         const clean = this.query.clean || false;
+        const wkb = this.query.wkb || false;
 
         const simplify_cmd = simplify ? `-simplify visvalingam percentage=${simplify}% keep-shapes ` : '';
         const clean_cmd = clean && Boolean(clean) ? '-clean ' : '';
@@ -65,6 +66,7 @@ class OGRRouterV2 {
                     .timeout(60000); // increase default ogr timeout of 15 seconds to match control-tower
                 ogr.options(['-oo', 'GEOM_POSSIBLE_NAMES=*geom*', '-oo', 'HEADERS=AUTO', '-oo', 'X_POSSIBLE_NAMES=Lon*', '-oo', 'Y_POSSIBLE_NAMES=Lat*', '-oo', 'KEEP_GEOM_COLUMNS=NO']);
             } else {
+                logger.debug(`It is ${this.request.body.files.file.type}`);
                 ogr = ogr2ogr(this.request.body.files.file.path);
                 ogr.project('EPSG:4326')
                     .timeout(60000); // increase default ogr timeout of 15 seconds to match control-tower
