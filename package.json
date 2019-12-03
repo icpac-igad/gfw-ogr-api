@@ -39,7 +39,7 @@
     "koa-validate": "0.2.11",
     "mapshaper": "^0.4.137",
     "newrelic": "1.27.1",
-    "ogr2ogr": "git+http://github.com/gfw-api/ogr2ogr.git#master",
+    "ogr2ogr": "^1.4.0",
     "thunks": "4.1.3",
     "url": "0.11.0",
     "xlsx": "0.15.1"
