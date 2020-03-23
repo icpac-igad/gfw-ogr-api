@@ -1,4 +1,3 @@
-
 const Router = require('koa-router');
 const logger = require('logger');
 const ogr2ogr = require('ogr2ogr');
@@ -6,6 +5,7 @@ const XLSX = require('xlsx');
 const GeoJSONSerializer = require('serializers/geoJSONSerializer');
 const fs = require('fs');
 const path = require('path');
+const mapshaper = require('mapshaper');
 const koaBody = require('koa-body')({
     multipart: true,
     formidable: {
@@ -22,31 +22,32 @@ const router = new Router({
     prefix: '/ogr'
 });
 
-const ogrExec = function (ogr) {
-    return function (callback) {
-        ogr.exec(callback);
-    };
+const ogrExec = (ogr) => (callback) => {
+    ogr.exec(callback);
 };
 
-const unlink = function (file) {
-    return function (callback) {
-        fs.unlink(file, callback);
-    };
+const unlink = (file) => (callback) => {
+    fs.unlink(file, callback);
 };
 
 
-class OGRRouter {
+class OGRRouterV2 {
 
-    static* convert() {
-        // logger.debug('Converting file...', this.request.body);
+    static* convertV2() {
+        logger.info('Converting file...', this.request.body);
 
         this.assert(this.request.body && this.request.body.files && this.request.body.files.file, 400, 'File required');
+        const simplify = this.query.simplify || null;
+        const clean = this.query.clean || false;
+
+        const simplifyCmd = simplify ? `-simplify visvalingam percentage=${simplify}% keep-shapes ` : '';
+        const cleanCmd = clean && Boolean(clean) ? '-clean ' : '';
 
         try {
             let ogr;
 
             if (this.request.body.files.file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-                logger.debug('IT IS A excel');
+                logger.debug('It is an excel file');
                 const xslxFile = XLSX.readFile(this.request.body.files.file.path);
                 const csvPAth = path.parse(this.request.body.files.file.path);
                 csvPAth.ext = '.csv';
@@ -72,11 +73,19 @@ class OGRRouter {
                 }
 
             }
+            // ogr output
             const result = yield ogrExec(ogr);
-            // logger.debug(result);
-            this.body = GeoJSONSerializer.serialize(result);
+
+
+            // Mapshaper input stream from file
+            const input = { 'input.json': result };
+            const cmd = `-i no-topology input.json ${simplifyCmd}${cleanCmd} -each '__id=$.id' -o output.json`;
+            logger.info(cmd);
+            const resultPostMapshaper = yield mapshaper.applyCommands(cmd, input);
+            this.body = GeoJSONSerializer.serialize(JSON.parse(resultPostMapshaper['output.json']));
+
         } catch (e) {
-            logger.error('Error convert file', e);
+            logger.error('Error convertV2 file', e);
             this.throw(400, e.message.split('\n')[0]);
         } finally {
             logger.debug('Removing file');
@@ -86,7 +95,7 @@ class OGRRouter {
 
 }
 
-router.post('/convert', koaBody, OGRRouter.convert);
+router.post('/convert', koaBody, OGRRouterV2.convertV2);
 
 
 module.exports = router;

@@ -1,6 +1,7 @@
-module.exports = function (grunt) {
+module.exports = (grunt) => {
 
     grunt.file.setBase('..');
+    // eslint-disable-next-line import/no-extraneous-dependencies
     require('load-grunt-tasks')(grunt);
 
     grunt.initConfig({
@@ -90,7 +91,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('unitTest', ['mochaTest:unit']);
 
-    grunt.registerTask('e2eTest', ['express:dev', 'mochaTest:e2e']);
+    grunt.registerTask('e2eTest', ['mochaTest:e2e']);
 
     grunt.registerTask('test', ['e2eTest', 'unitTest']);
 

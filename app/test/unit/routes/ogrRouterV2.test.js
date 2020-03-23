@@ -1,44 +1,21 @@
-
 const logger = require('logger');
-const should = require('should');
-const assert = require('assert');
-const sinon = require('sinon');
-const config = require('config');
-const ogrRouterV2 = require('routes/api/v2/ogrRouter');
+const { should } = require('chai');
+const ogrRouterV2 = require('routes/api/v2/ogrRouter.router');
 const path = require('path');
 const fs = require('fs-extra');
 
 
-const stat = function (path) {
-    return function (callback) {
-        fs.stat(path, callback);
-    };
+const stat = (statPath) => (callback) => {
+    fs.stat(statPath, callback);
 };
 
-const unlink = function (file) {
-    return function (callback) {
-        fs.unlink(file, callback);
-    };
+const unlink = (file) => (callback) => {
+    fs.unlink(file, callback);
 };
 
 
 describe('Check /convert route', () => {
 
-    const ctx = {
-        assert() {
-            return false;
-        },
-        request: {
-            body: {
-                files: {
-                    file: {
-                        path: path.join('/tmp/valid', 'shape.zip')
-                    }
-                }
-            }
-        },
-        body: null
-    };
     const ctxInvalid = {
         assert() {
             return false;
@@ -47,102 +24,46 @@ describe('Check /convert route', () => {
             body: {
                 files: {
                     file: {
-                        path: path.join('/tmp/invalid', 'invalid.zip')
+                        path: '/tmp/invalid/invalid.zip'
                     }
                 }
             }
         },
         body: null,
-        throw(status, message) {
-            this.status = status;
-            this.body = message;
-        }
+        throw() { }
     };
 
     const ctxInvalidNotParam = {
-        assert(param, status, message) {
-            if (!param) {
-                this.throw(status, message);
-                throw new Error();
-            }
-        },
         request: {
             body: {
-                files: {
-
-                }
+                files: {}
             }
         },
         body: null,
-        throw(status, message) {
-            this.status = status;
-            this.body = message;
-        }
+        throw() { }
     };
+
     const url = '/ogr/convert';
     const method = 'POST';
     let func = null;
-    before(function* () {
 
+    before(() => {
         for (let i = 0, { length } = ogrRouterV2.stack; i < length; i++) {
             if (ogrRouterV2.stack[i].regexp.test(url) && ogrRouterV2.stack[i].methods.indexOf(method) >= 0) {
+                // eslint-disable-next-line prefer-destructuring
                 func = ogrRouterV2.stack[i].stack[1];
             }
         }
 
     });
-    // describe('valid files v2', function() {
-    //    beforeEach(function*() {
-    //        logger.debug('Copying file');
-    //        fs.copySync(path.join(__dirname, '../files/shape.zip'), path.join('/tmp/valid', 'shape.zip'));
-    //    });
-    //
-    //
-    //        it('Convert valid file', function*() {
-    //
-    //            let funcTest = func.bind(ctx);
-    //    //        funcTest.should.be.a.Function();
-    //    //        logger.info('_________>>>>__________');
-    //    //        yield funcTest();
-    //    //        logger.info('_________>>>>__________');
-    //    //        ctx.body.should.not.be.null();
-    //
-    //            ctx.body.should.have.property('data');
-    //
-    //            let data = ctx.body.data;
-    //    //        logger.info(data);
-    //    //        data.should.have.property('type');
-    //    //        data.should.have.property('attributes');
-    //    //        data.should.have.property('id');
-    //    //        data.type.should.equal('geoJSON');
-    //
-    //            let resultStat = null;
-    //    //        try {
-    //    //            resultStat = yield stat(ctx.request.body.files.file.path);
-    //    //            //if not return exception, fail
-    //    //            true.should.be.equal(false);
-    //    //        } catch (e) {
-    //    //            e.should.be.a.Error();
-    //    //        }
-    //    //        should(resultStat).be.null();
-    //    //    });
-    //
-    //    //    afterEach(function*() {
-    //    //        try {
-    //    //            yield unlink(path.join('/tmp', 'shape.zip'));
-    //    //        } catch (e) {
-    //
-    //    //        }
-    //    //    });
-    // });
 
     describe('Invalid files v2', () => {
-        beforeEach(function* () {
+        beforeEach(() => {
             logger.debug('Copying file');
             fs.copySync(path.join(__dirname, '../files/invalid.zip'), path.join('/tmp/invalid', 'invalid.zip'));
         });
 
-        it('Convert invalid file', function* () {
+        it('Convert invalid file', function* convertInvalidFile() {
 
             const funcTest = func.bind(ctxInvalid);
             funcTest.should.be.a.Function();
@@ -159,16 +80,18 @@ describe('Check /convert route', () => {
             should(resultStat).be.null();
 
         });
-        afterEach(function* () {
+        afterEach(function* afterConvertInvalidFile() {
             try {
                 yield unlink(path.join('/tmp', 'invalid.zip'));
+                // eslint-disable-next-line no-empty
             } catch (e) {
 
             }
         });
     });
+
     describe('Not file param v2', () => {
-        it('Check file in body', function* () {
+        it('Check file in body', function* checkFileInBody() {
 
             const funcTest = func.bind(ctxInvalidNotParam);
             funcTest.should.be.a.Function();
@@ -176,12 +99,10 @@ describe('Check /convert route', () => {
             try {
                 yield funcTest();
                 ctxInvalid.status.should.be.equal(400);
-
             } catch (e) {
-
                 e.should.be.a.Error();
             }
-            should(resultStat).be.null();
+            resultStat.should.be.null();
         });
     });
 });

@@ -1,24 +1,16 @@
-
 const logger = require('logger');
-const should = require('should');
-const assert = require('assert');
-const sinon = require('sinon');
-const config = require('config');
-const ogrRouter = require('routes/api/v1/ogrRouter');
+const { should } = require('chai');
+const ogrRouter = require('routes/api/v1/ogrRouter.router');
 const path = require('path');
 const fs = require('fs-extra');
 
 
-const stat = function (path) {
-    return function (callback) {
-        fs.stat(path, callback);
-    };
+const stat = (statPath) => (callback) => {
+    fs.stat(statPath, callback);
 };
 
-const unlink = function (file) {
-    return function (callback) {
-        fs.unlink(file, callback);
-    };
+const unlink = (file) => (callback) => {
+    fs.unlink(file, callback);
 };
 
 
@@ -32,7 +24,7 @@ describe('Check /convert route', () => {
             body: {
                 files: {
                     file: {
-                        path: path.join('/tmp/valid', 'shape.zip')
+                        path: '/tmp/valid/shape.zip'
                     }
                 }
             }
@@ -47,58 +39,55 @@ describe('Check /convert route', () => {
             body: {
                 files: {
                     file: {
-                        path: path.join('/tmp/invalid', 'invalid.zip')
+                        path: '/tmp/invalid/invalid.zip'
                     }
                 }
             }
         },
         body: null,
-        throw(status, message) {
-            this.status = status;
-            this.body = message;
+        throw() {
         }
     };
 
     const ctxInvalidNotParam = {
         assert(param, status, message) {
             if (!param) {
+                // eslint-disable-next-line mocha/no-setup-in-describe
                 this.throw(status, message);
                 throw new Error();
             }
         },
         request: {
             body: {
-                files: {
-
-                }
+                files: {}
             }
         },
         body: null,
-        throw(status, message) {
-            this.status = status;
-            this.body = message;
+        throw() {
         }
     };
     const url = '/ogr/convert';
     const method = 'POST';
     let func = null;
-    before(function* () {
+
+    before(() => {
 
         for (let i = 0, { length } = ogrRouter.stack; i < length; i++) {
             if (ogrRouter.stack[i].regexp.test(url) && ogrRouter.stack[i].methods.indexOf(method) >= 0) {
+                // eslint-disable-next-line prefer-destructuring
                 func = ogrRouter.stack[i].stack[1];
             }
         }
 
     });
     describe('valid files', () => {
-        beforeEach(function* () {
+        beforeEach(() => {
             logger.debug('Copying file');
             fs.copySync(path.join(__dirname, '../files/shape.zip'), path.join('/tmp/valid', 'shape.zip'));
         });
 
 
-        it('Convert valid file', function* () {
+        it('Convert valid file', function* convertValidFile() {
             const funcTest = func.bind(ctx);
             funcTest.should.be.a.Function();
             yield funcTest();
@@ -121,22 +110,22 @@ describe('Check /convert route', () => {
             should(resultStat).be.null();
         });
 
-        afterEach(function* () {
+        afterEach(function* afterConvertValidFile() {
             try {
                 yield unlink(path.join('/tmp', 'shape.zip'));
+                // eslint-disable-next-line no-empty
             } catch (e) {
-
             }
         });
     });
 
     describe('Invalid files', () => {
-        beforeEach(function* () {
+        beforeEach(() => {
             logger.debug('Copying file');
             fs.copySync(path.join(__dirname, '../files/invalid.zip'), path.join('/tmp/invalid', 'invalid.zip'));
         });
 
-        it('Convert invalid file', function* () {
+        it('Convert invalid file', function* convertInvalidFile() {
 
             const funcTest = func.bind(ctxInvalid);
             funcTest.should.be.a.Function();
@@ -153,16 +142,18 @@ describe('Check /convert route', () => {
             should(resultStat).be.null();
 
         });
-        afterEach(function* () {
+
+        afterEach(function* afterConvertInvalidFile() {
             try {
                 yield unlink(path.join('/tmp', 'invalid.zip'));
+                // eslint-disable-next-line no-empty
             } catch (e) {
-
             }
         });
     });
+
     describe('Not file param', () => {
-        it('Check file in body', function* () {
+        it('Check file in body', function* checkFileInBody() {
 
             const funcTest = func.bind(ctxInvalidNotParam);
             funcTest.should.be.a.Function();

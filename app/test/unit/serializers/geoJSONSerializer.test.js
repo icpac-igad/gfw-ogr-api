@@ -1,7 +1,3 @@
-
-const logger = require('logger');
-const should = require('should');
-const assert = require('assert');
 const GeoJSONSerializer = require('serializers/geoJSONSerializer');
 
 describe('GeoJSON serializer test', () => {
@@ -55,13 +51,9 @@ describe('GeoJSON serializer test', () => {
         }]
     };
 
-    before(function* () {
-
-    });
-
     it('Generate correct jsonapi response (single)', () => {
         const response = GeoJSONSerializer.serialize(single);
-        response.should.not.be.a.Array();
+        response.should.not.be.an('array');
         response.should.have.property('data');
         const { data } = response;
         data.should.have.property('type');
@@ -72,25 +64,25 @@ describe('GeoJSON serializer test', () => {
         data.attributes.should.have.property('type');
         data.attributes.type.should.be.equal(single.type);
         data.attributes.should.have.property('features');
-        data.attributes.features.should.be.a.Array();
+        data.attributes.features.should.be.an('array');
         data.attributes.features.should.length(single.features.length);
         const feature = data.attributes.features[0];
         feature.should.have.property('type');
         feature.type.should.be.equal(single.features[0].type);
         feature.should.have.property('geometry');
-        feature.geometry.should.be.a.Object();
+        feature.geometry.should.be.an('object');
         const { geometry } = feature;
         geometry.should.have.property('type');
         geometry.type.should.be.equal(single.features[0].geometry.type);
         geometry.should.have.a.property('coordinates');
-        geometry.coordinates.should.be.a.Array();
+        geometry.coordinates.should.be.an('array');
         geometry.coordinates.should.length(single.features[0].geometry.coordinates.length);
         geometry.coordinates.should.be.equal(single.features[0].geometry.coordinates);
     });
 
     it('Generate correct jsonapi response (several)', () => {
         const response = GeoJSONSerializer.serialize(severalFeatures);
-        response.should.not.be.a.Array();
+        response.should.not.be.an('array');
         response.should.have.property('data');
         const { data } = response;
         data.should.have.property('type');
@@ -101,23 +93,20 @@ describe('GeoJSON serializer test', () => {
         data.attributes.should.have.property('type');
         data.attributes.type.should.be.equal(severalFeatures.type);
         data.attributes.should.have.property('features');
-        data.attributes.features.should.be.a.Array();
+        data.attributes.features.should.be.an('array');
         data.attributes.features.should.length(severalFeatures.features.length);
         const feature = data.attributes.features[0];
         feature.should.have.property('type');
         feature.type.should.be.equal(severalFeatures.features[0].type);
         feature.should.have.property('geometry');
-        feature.geometry.should.be.a.Object();
+        feature.geometry.should.be.an('object');
         const { geometry } = feature;
         geometry.should.have.property('type');
         geometry.type.should.be.equal(severalFeatures.features[0].geometry.type);
         geometry.should.have.a.property('coordinates');
-        geometry.coordinates.should.be.a.Array();
+        geometry.coordinates.should.be.an('array');
         geometry.coordinates.should.length(severalFeatures.features[0].geometry.coordinates.length);
         geometry.coordinates.should.be.equal(severalFeatures.features[0].geometry.coordinates);
     });
 
-    after(function* () {
-
-    });
 });

@@ -1,5 +1,3 @@
-
-const logger = require('logger');
 const JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 const geoJSONSerializer = new JSONAPISerializer('geoJSON', {
@@ -10,7 +8,7 @@ const geoJSONSerializer = new JSONAPISerializer('geoJSON', {
     crs: {
         attributes: ['type', 'properties']
     },
-    typeForAttribute(attribute, record) {
+    typeForAttribute(attribute) {
         return attribute;
     }
 });

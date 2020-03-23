@@ -1,8 +1,3 @@
-
-const logger = require('logger');
-const JSONAPISerializer = require('jsonapi-serializer').Serializer;
-
-
 class ErrorSerializer {
 
     static serializeValidationError(data, typeParam) {
