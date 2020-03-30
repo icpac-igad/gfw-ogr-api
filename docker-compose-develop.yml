@@ -2,6 +2,8 @@ version: "3"
 services:
   develop:
     build: .
+    env_file:
+      - dev.env
     ports:
       - "7948:7948"
     container_name: gfw-ogr-api-develop
