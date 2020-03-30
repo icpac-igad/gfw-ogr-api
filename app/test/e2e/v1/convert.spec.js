@@ -11,7 +11,7 @@ const requester = getTestServer();
 nock.disableNetConnect();
 nock.enableNetConnect(process.env.HOST_IP);
 
-describe('Convert tests', () => {
+describe('V1 convert tests', () => {
 
     before(async () => {
         if (process.env.NODE_ENV !== 'test') {
@@ -19,12 +19,15 @@ describe('Convert tests', () => {
         }
     });
 
-    it('Convert with no file should fail', async () => {
+    it('V1 convert with no file should fail', async () => {
         const response = await requester
             .post(`/api/v1/ogr/convert`)
             .send();
 
         response.status.should.equal(400);
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(400);
+        response.body.errors[0].should.have.property('detail').and.be.a('string');
         response.body.should.deep.equal({
             errors: [
                 {
@@ -35,23 +38,18 @@ describe('Convert tests', () => {
         });
     });
 
-    it('Convert an invalid zip file should fail', async () => {
+    it('V1 convert an invalid zip file should fail', async () => {
         const response = await requester
             .post(`/api/v1/ogr/convert`)
             .attach('file', `${process.cwd()}/app/test/e2e/files/invalid.zip`);
 
         response.status.should.equal(400);
-        response.body.should.deep.equal({
-            errors: [
-                {
-                    status: 400,
-                    detail: 'FAILURE:'
-                }
-            ]
-        });
+        response.body.should.have.property('errors').and.be.an('array').and.length(1);
+        response.body.errors[0].should.have.property('status').and.equal(400);
+        response.body.errors[0].should.have.property('detail').and.be.a('string');
     });
 
-    it('Convert a valid zip file should be successful (happy case)', async () => {
+    it('V1 convert a valid zip file should be successful (happy case)', async () => {
         const fileData = JSON.parse(fs.readFileSync(`${process.cwd()}/app/test/e2e/files/shape_response_v1.json`));
 
         const response = await requester
