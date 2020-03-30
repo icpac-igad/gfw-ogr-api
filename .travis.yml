@@ -4,11 +4,6 @@ node_js:
 cache:
   directories:
   - "node_modules"
-addons:
-  apt:
-    packages:
-      - libgdal-dev
-      - gdal-bin
 env:
   global:
     - CC_TEST_REPORTER_ID=0426e06284145cbb281647727ccc1a16b626df6df3c89db9e875b79b93c2b38e
@@ -20,6 +15,10 @@ env:
     - CT_URL=http://127.0.0.1:9000
     - CT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
 
+before_install:
+  - sudo add-apt-repository ppa:ubuntugis/ppa
+  - sudo apt-get -q update
+  - sudo apt-get -y install gdal-bin
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
