@@ -8,7 +8,7 @@ addons:
   apt:
     packages:
       - libgdal-dev
-      - gdal
+      - gdal-bin
 env:
   global:
     - CC_TEST_REPORTER_ID=0426e06284145cbb281647727ccc1a16b626df6df3c89db9e875b79b93c2b38e
