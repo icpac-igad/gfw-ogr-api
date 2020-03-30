@@ -3,16 +3,15 @@ services:
   develop:
     build: .
     ports:
-      - "3200:3200"
+      - "7948:7948"
     container_name: gfw-ogr-api-develop
     environment:
-      PORT: 3200
+      PORT: 7948
       NODE_PATH: app/src
       NODE_ENV: dev
-      API_GATEWAY_URL: http://mymachine:9000
-      CT_REGISTER_MODE: auto
       CT_URL: http://mymachine:9000
-      LOCAL_URL: http://mymachine:3200
+      CT_REGISTER_MODE: auto
+      LOCAL_URL: http://localhost:7948
       CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
     command: develop
     volumes:
