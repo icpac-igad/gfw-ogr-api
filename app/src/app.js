@@ -1,18 +1,17 @@
 const config = require('config');
 const logger = require('logger');
 const path = require('path');
-const koa = require('koa');
+const Koa = require('koa');
 const koaLogger = require('koa-logger');
 const loader = require('loader');
-const validate = require('koa-validate');
-const convert = require('koa-convert');
+const koaValidate = require('koa-validate');
+const koaBody = require('koa-body');
 const koaSimpleHealthCheck = require('koa-simple-healthcheck');
 const ErrorSerializer = require('serializers/errorSerializer');
 const ctRegisterMicroservice = require('ct-register-microservice-node');
 
-
 // instance of koa
-const app = koa();
+const app = new Koa();
 
 // if environment is dev then load koa-logger
 if (process.env.NODE_ENV === 'dev') {
@@ -20,9 +19,9 @@ if (process.env.NODE_ENV === 'dev') {
     app.use(koaLogger());
 }
 
-app.use(function* handleErrors(next) {
+app.use(async (ctx, next) => {
     try {
-        yield next;
+        await next();
     } catch (inErr) {
         let error = inErr;
         try {
@@ -31,49 +30,50 @@ app.use(function* handleErrors(next) {
             logger.debug('Could not parse error message - is it JSON?: ', inErr);
             error = inErr;
         }
-        this.status = error.status || this.status || 500;
-        if (this.status >= 500) {
+        ctx.status = error.status || ctx.status || 500;
+        if (ctx.status >= 500) {
             logger.error(error);
         } else {
             logger.info(error);
         }
 
-        this.body = ErrorSerializer.serializeError(this.status, error.message);
-        if (process.env.NODE_ENV === 'prod' && this.status === 500) {
-            this.body = 'Unexpected error';
+        ctx.body = ErrorSerializer.serializeError(ctx.status, error.message);
+        if (process.env.NODE_ENV === 'prod' && ctx.status === 500) {
+            ctx.body = 'Unexpected error';
         }
+        ctx.response.type = 'application/vnd.api+json';
     }
-    this.response.type = 'application/vnd.api+json';
 });
 
-// load custom validator
-app.use(validate());
+app.use(koaBody({
+    multipart: true,
+    formidable: {
+        uploadDir: '/tmp',
+        onFileBegin(name, file) {
+            const folder = path.dirname(file.path);
+            file.path = path.join(folder, file.name);
+        }
+    }
+}));
 
-app.use(convert.back(koaSimpleHealthCheck()));
+// load custom validator
+koaValidate(app);
+
+app.use(koaSimpleHealthCheck());
 
 // load routes
 loader.loadRoutes(app);
 
 // Instance of http module
-const appServer = require('http').Server(app.callback());
-
-// get port of environment, if not exist obtain of the config.
-// In production environment, the port must be declared in environment variable
-const port = process.env.PORT || config.get('service.port');
-
-
-const server = appServer.listen(port, () => {
+const server = app.listen(process.env.PORT, () => {
     ctRegisterMicroservice.register({
         info: require('../microservice/register.json'),
         swagger: require('../microservice/public-swagger.json'),
-        id: config.get('service.id'),
-        name: config.get('service.name'),
-        dirConfig: path.join(__dirname, '../microservice'),
-        dirPackage: path.join(__dirname, '../../'),
         mode: (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') ? ctRegisterMicroservice.MODE_AUTOREGISTER : ctRegisterMicroservice.MODE_NORMAL,
-        framework: ctRegisterMicroservice.KOA1,
-        logger,
+        framework: ctRegisterMicroservice.KOA2,
         app,
+        logger,
+        name: config.get('service.name'),
         ctUrl: process.env.CT_URL,
         url: process.env.LOCAL_URL,
         token: process.env.CT_TOKEN,
@@ -85,6 +85,7 @@ const server = appServer.listen(port, () => {
     });
 });
 
-logger.info(`Server started in port:${port}`);
+
+logger.info(`Server started in port:${process.env.PORT}`);
 
 module.exports = server;

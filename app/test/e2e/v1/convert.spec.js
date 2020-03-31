@@ -19,24 +19,24 @@ describe('V1 convert tests', () => {
         }
     });
 
-    it('V1 convert with no file should fail', async () => {
-        const response = await requester
-            .post(`/api/v1/ogr/convert`)
-            .send();
-
-        response.status.should.equal(400);
-        response.body.should.have.property('errors').and.be.an('array').and.length(1);
-        response.body.errors[0].should.have.property('status').and.equal(400);
-        response.body.errors[0].should.have.property('detail').and.be.a('string');
-        response.body.should.deep.equal({
-            errors: [
-                {
-                    status: 400,
-                    detail: 'File required'
-                }
-            ]
-        });
-    });
+    // it('V1 convert with no file should fail', async () => {
+    //     const response = await requester
+    //         .post(`/api/v1/ogr/convert`)
+    //         .send();
+    //
+    //     response.status.should.equal(400);
+    //     response.body.should.have.property('errors').and.be.an('array').and.length(1);
+    //     response.body.errors[0].should.have.property('status').and.equal(400);
+    //     response.body.errors[0].should.have.property('detail').and.be.a('string');
+    //     response.body.should.deep.equal({
+    //         errors: [
+    //             {
+    //                 status: 400,
+    //                 detail: 'File required'
+    //             }
+    //         ]
+    //     });
+    // });
 
     it('V1 convert an invalid zip file should fail', async () => {
         const response = await requester
