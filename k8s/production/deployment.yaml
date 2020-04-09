@@ -3,41 +3,35 @@ kind: Deployment
 metadata:
   namespace: gfw
   labels:
-    name: {name}
-    app: gfw
-  name: {name}
+    name: gfw-ogr
+  name: gfw-ogr
 spec:
   revisionHistoryLimit: 2
   template:
     metadata:
       labels:
-        name: {name}
+        name: gfw-ogr
     spec:
-      tolerations:
-      - key: "type"
-        operator: "Equal"
-        value: "gfw"
-        effect: "NoSchedule"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: type
-                operator: In
-                values:
-                - gfw
+              - matchExpressions:
+                - key: type
+                  operator: In
+                  values:
+                  - gfw
       containers:
-      - name: {name}
-        image: vizzuality/{name}
+      - name: gfw-ogr
+        image: vizzuality/gfw-ogr
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
+            cpu: "0.5"
+            memory: "256M"
           limits:
-            memory: "512Mi"
-            cpu: "1000m"
+            cpu: "1"
+            memory: "512M"
         args:
           - start
         env:
@@ -48,7 +42,7 @@ spec:
           - name: NODE_PATH
             value: app/src
           - name: LOCAL_URL
-            value: http://{name}.gfw.svc.cluster.local:3200
+            value: http://gfw-ogr.gfw.svc.cluster.local:3200
           - name: CT_URL
             valueFrom:
                 secretKeyRef:
@@ -72,5 +66,22 @@ spec:
 
         ports:
           - containerPort: 3200
+        readinessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /healthcheck
+            port: 3200
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            scheme: HTTP
+            path: /healthcheck
+            port: 3200
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+          periodSeconds: 15
 
       restartPolicy: Always
