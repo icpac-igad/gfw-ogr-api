@@ -2,20 +2,15 @@ apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    name: {name}
-  name: {name}
+    name: gfw-ogr-gfw-pro
+  name: gfw-ogr-gfw-pro
 spec:
   revisionHistoryLimit: 2
   template:
     metadata:
       labels:
-        name: {name}
+        name: gfw-ogr-gfw-pro
     spec:
-      tolerations:
-      - key: "type"
-        operator: "Equal"
-        value: "gfw-pro"
-        effect: "NoSchedule"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -26,8 +21,8 @@ spec:
                 values:
                 - gfw-pro
       containers:
-      - name: {name}
-        image: vizzuality/{name}
+      - name: gfw-ogr-gfw-pro
+        image: vizzuality/gfw-ogr-gfw-pro
         imagePullPolicy: Always
         resources:
           requests:
@@ -46,7 +41,7 @@ spec:
           - name: NODE_PATH
             value: app/src
           - name: LOCAL_URL
-            value: http://{name}.default.svc.cluster.local:3200
+            value: http://gfw-ogr-gfw-pro.default.svc.cluster.local:3200
           - name: CT_URL
             valueFrom:
                 secretKeyRef:
