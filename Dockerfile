@@ -1,5 +1,5 @@
 FROM vizzuality/gdal
-MAINTAINER raul.requero@vizzuality.com
+MAINTAINER info@vizzuality.com
 
 # Install node
 RUN apt-get update && apt-get -y install curl git
