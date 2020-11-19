@@ -27,7 +27,10 @@ app.use(async (ctx, next) => {
         try {
             error = JSON.parse(inErr);
         } catch (e) {
-            logger.debug('Could not parse error message - is it JSON?: ', inErr);
+            logger.debug(
+                'Could not parse error message - is it JSON?: ',
+                inErr
+            );
             error = inErr;
         }
         ctx.status = error.status || ctx.status || 500;
@@ -45,16 +48,18 @@ app.use(async (ctx, next) => {
     }
 });
 
-app.use(koaBody({
-    multipart: true,
-    formidable: {
-        uploadDir: '/tmp',
-        onFileBegin(name, file) {
-            const folder = path.dirname(file.path);
-            file.path = path.join(folder, file.name);
-        }
-    }
-}));
+app.use(
+    koaBody({
+        multipart: true,
+        formidable: {
+            uploadDir: process.env.UPLOAD_DIR || '/tmp',
+            onFileBegin(name, file) {
+                const folder = path.dirname(file.path);
+                file.path = path.join(folder, file.name);
+            },
+        },
+    })
+);
 
 // load custom validator
 koaValidate(app);
@@ -66,25 +71,32 @@ loader.loadRoutes(app);
 
 // Instance of http module
 const server = app.listen(process.env.PORT, () => {
-    ctRegisterMicroservice.register({
-        info: require('../microservice/register.json'),
-        swagger: require('../microservice/public-swagger.json'),
-        mode: (process.env.CT_REGISTER_MODE && process.env.CT_REGISTER_MODE === 'auto') ? ctRegisterMicroservice.MODE_AUTOREGISTER : ctRegisterMicroservice.MODE_NORMAL,
-        framework: ctRegisterMicroservice.KOA2,
-        app,
-        logger,
-        name: config.get('service.name'),
-        ctUrl: process.env.CT_URL,
-        url: process.env.LOCAL_URL,
-        token: process.env.CT_TOKEN,
-        active: true
-    }).then(() => {
-    }, (error) => {
-        logger.error(error);
-        process.exit(1);
-    });
+    ctRegisterMicroservice
+        .register({
+            info: require('../microservice/register.json'),
+            swagger: require('../microservice/public-swagger.json'),
+            mode:
+                process.env.CT_REGISTER_MODE
+                && process.env.CT_REGISTER_MODE === 'auto'
+                    ? ctRegisterMicroservice.MODE_AUTOREGISTER
+                    : ctRegisterMicroservice.MODE_NORMAL,
+            framework: ctRegisterMicroservice.KOA2,
+            app,
+            logger,
+            name: config.get('service.name'),
+            ctUrl: process.env.CT_URL,
+            url: process.env.LOCAL_URL,
+            token: process.env.CT_TOKEN,
+            active: true,
+        })
+        .then(
+            () => {},
+            (error) => {
+                logger.error(error);
+                process.exit(1);
+            }
+        );
 });
-
 
 logger.info(`Server started in port:${process.env.PORT}`);
 
