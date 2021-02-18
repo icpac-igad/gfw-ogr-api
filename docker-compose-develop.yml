@@ -5,14 +5,13 @@ services:
     env_file:
       - dev.env
     ports:
-      - "7948:7948"
+      - "3200:3200"
     container_name: gfw-ogr-api-develop
-    environment:
-      PORT: 7948
-      NODE_PATH: app/src
-      NODE_ENV: dev
-      CT_REGISTER_MODE: auto
-      CT_TOKEN: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Im1pY3Jvc2VydmljZSIsImNyZWF0ZWRBdCI6IjIwMTYtMDktMTQifQ.IRCIRm1nfIQTfda_Wb6Pg-341zhV8soAgzw7dd5HxxQ
     command: develop
     volumes:
       - ./app:/opt/gfw-ogr-api/app
+      
+networks:
+  default:
+    external:
+      name: control-tower_controltower
